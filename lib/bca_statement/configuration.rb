@@ -5,11 +5,11 @@ module BcaStatement
     def initialize
       @client_id = nil
       @client_secret = nil 
-      @corporate_id = nil
-      @account_number = nil
+      @corporate_id = 'BCAAPI2016 '
+      @account_number = '0201245680'
       @api_key = nil
       @api_secret = nil
-      @base_url = nil
+      @base_url = 'https://sandbox.bca.co.id'
       @domain = nil
     end
   end

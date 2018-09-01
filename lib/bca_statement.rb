@@ -1,5 +1,7 @@
 require "bca_statement/version"
 require "bca_statement/configuration"
+require "bca_statement/client"
+
 module BcaStatement
   class << self
     attr_accessor :configuration
