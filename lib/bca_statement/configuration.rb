@@ -5,7 +5,7 @@ module BcaStatement
     def initialize
       @client_id = nil
       @client_secret = nil 
-      @corporate_id = 'BCAAPI2016 '
+      @corporate_id = 'BCAAPI2016'
       @account_number = '0201245680'
       @api_key = nil
       @api_secret = nil
