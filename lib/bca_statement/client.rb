@@ -12,10 +12,15 @@ module BcaStatement
 
     def initialize
       @base_url = BcaStatement.configuration.base_url
+      @corporate_id = BcaStatement.configuration.corporate_id
+      @account_number = BcaStatement.configuration.account_number
+      @api_key = BcaStatement.configuration.api_key
+      @domain = BcaStatement.configuration.domain
+
       authentication
     end
 
-     # Get your Bisnis account statement for a period up to 31 days.
+     # Get your BCA Bisnis account statement for a period up to 31 days.
     def get_statement(start_date = '2016-08-29', end_date = '2016-09-01') 
       return nil unless @access_token
 
@@ -23,17 +28,15 @@ module BcaStatement
       @start_date = start_date.to_s
       @end_date = end_date.to_s
       @path = "/banking/v3/corporates/"
-      @corporate_id = BcaStatement.configuration.corporate_id
-      @account_number = BcaStatement.configuration.account_number
       @relative_url = "#{@path}#{@corporate_id}/accounts/#{@account_number}/statements?EndDate=#{@end_date}&StartDate=#{@start_date}"
-      response = RestClient.get("#{@base_url}#{@relative_url}",
+      begin
+        response = RestClient.get("#{@base_url}#{@relative_url}",
         "Content-Type": 'application/json',
         "Authorization": "Bearer #{@access_token}",
-        "Origin": BcaStatement.configuration.domain,
-        "X-BCA-Key": BcaStatement.configuration.api_key,
+        "Origin": @domain,
+        "X-BCA-Key": @api_key,
         "X-BCA-Timestamp":  @timestamp,
         "X-BCA-Signature": signature)
-      begin
         elements = JSON.parse response.body
         statements = []
 
@@ -56,7 +59,41 @@ module BcaStatement
       end 
     end
 
-    def account_statement
+    # Get your BCA Bisnis account balance information
+    def balance
+      return nil unless @access_token
+
+      begin
+        @timestamp = Time.now.iso8601(3)
+        @relative_url = "/banking/v3/corporates/#{@corporate_id}/accounts/#{@account_number}"
+        response = RestClient.get("#{@base_url}#{@relative_url}",
+          "Content-Type": 'application/json',
+          "Authorization": "Bearer #{@access_token}",
+          "Origin": @domain,
+          "X-BCA-Key": @api_key,
+          "X-BCA-Timestamp":  @timestamp,
+          "X-BCA-Signature": signature)
+
+        data = JSON.parse response.body
+        if account_detail_success = data['AccountDetailDataSuccess']
+          detail = account_detail_success.first
+            attribute = {
+              account_number: detail['AccountNumber'],
+              currency: detail['Currency'],
+              balance: detail['Balance'].to_f,
+              available_balance: detail['AvailableBalance'].to_f,
+              float_amount: detail['FloatAmount'].to_f,
+              hold_amount: detail['HoldAmount'].to_f
+              plafon: detail['Plafon'].to_f
+            }
+          BcaStatement::Entities::Balance.new(attribute)
+      
+        else
+          return nil
+        end
+      rescue RestClient::ExceptionWithResponse => err
+        return nil
+      end 
     end
 
     private
