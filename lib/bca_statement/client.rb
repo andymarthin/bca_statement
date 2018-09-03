@@ -83,7 +83,7 @@ module BcaStatement
               balance: detail['Balance'].to_f,
               available_balance: detail['AvailableBalance'].to_f,
               float_amount: detail['FloatAmount'].to_f,
-              hold_amount: detail['HoldAmount'].to_f
+              hold_amount: detail['HoldAmount'].to_f,
               plafon: detail['Plafon'].to_f
             }
           BcaStatement::Entities::Balance.new(attribute)
