@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/bca_statement.svg)](https://badge.fury.io/rb/bca_statement)
+
 # BcaStatement
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/bca_statement`. To experiment with that code, run `bin/console` for an interactive prompt.
