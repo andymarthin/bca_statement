@@ -30,7 +30,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency 'pry', '~> 0.9'
 
-  spec.add_dependency 'model_attribute', "~> 3.1.0"
+  spec.add_dependency 'model_attribute', "~> 3.2.0"
   spec.add_dependency 'rest-client', "~> 2.0.2"
 
 end
