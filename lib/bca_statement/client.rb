@@ -11,12 +11,15 @@ module BcaStatement
     attr_reader :access_token
 
     def initialize
-      @timestamp = Time.now.iso8601(3)
       @base_url = BcaStatement.configuration.base_url
       authentication
     end
 
-    def get_statement(start_date = '2016-08-29', end_date = '2016-09-01')
+     # Get your Bisnis account statement for a period up to 31 days.
+    def get_statement(start_date = '2016-08-29', end_date = '2016-09-01') 
+      return nil unless @access_token
+
+      @timestamp = Time.now.iso8601(3)
       @start_date = start_date.to_s
       @end_date = end_date.to_s
       @path = "/banking/v3/corporates/"
@@ -30,13 +33,13 @@ module BcaStatement
         "X-BCA-Key": BcaStatement.configuration.api_key,
         "X-BCA-Timestamp":  @timestamp,
         "X-BCA-Signature": signature)
-      if response.code.eql?(200)
+      begin
         elements = JSON.parse response.body
         statements = []
 
         elements['Data'].each do |element|
           year = Date.parse(@start_date).strftime('%m').to_i.eql?(12) ? Date.parse(@start_date).strftime('%Y') : Date.parse(@end_date).strftime('%Y')
-          date = "#{element['TransactionDate']}/#{year}"
+          date = element['TransactionDate'].eql?("PEND") ? element['TransactionDate'] : "#{element['TransactionDate']}/#{year}"
           attribute = {
             date: date,
             brance_code: element['BranchCode'],
@@ -48,10 +51,12 @@ module BcaStatement
           statements << BcaStatement::Entities::Statement.new(attribute)
         end
         statements
-      else
-        return
-      end
+      rescue RestClient::ExceptionWithResponse => err
+        return nil
+      end 
+    end
 
+    def account_statement
     end
 
     private
@@ -64,16 +69,18 @@ module BcaStatement
 
     def authentication
       # authentication to get access token
-      url = "#{@base_url}/api/oauth/token"
-      credential = "#{BcaStatement.configuration.client_id}:#{BcaStatement.configuration.client_secret}"
-      authorization = { Authorization: "Basic #{Base64.strict_encode64(credential)}" }
-      payload = { grant_type: 'client_credentials' }
+      begin
+        url = "#{@base_url}/api/oauth/token"
+        credential = "#{BcaStatement.configuration.client_id}:#{BcaStatement.configuration.client_secret}"
+        authorization = { Authorization: "Basic #{Base64.strict_encode64(credential)}" }
+        payload = { grant_type: 'client_credentials' }
 
-      response = RestClient.post(url, payload, authorization)
-      if response.code.eql?(200)
+        response = RestClient.post(url, payload, authorization)
         body = JSON.parse response.body
         @access_token = body['access_token']
-      end
+      rescue RestClient::ExceptionWithResponse => err
+        err.response
+      end 
     end
   end
 end
