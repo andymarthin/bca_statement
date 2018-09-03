@@ -20,9 +20,28 @@ Or install it yourself as:
 
     $ gem install bca_statement
 
+## Configuration
+
+The library can be initialized with a Rails initializer containing similar:
+```ruby
+BcaStatement.configure do |config|
+    config.base_url = 'your bca api endpoint'
+    config.client_id = 'your client id'
+    config.client_secret = 'your client secret'
+    config.api_key = 'your api key'
+    config.api_secret = 'your api secret'
+    config.domain = 'your domain'
+end
+```
+
 ## Usage
 
-TODO: Write usage instructions here
+### get statement
+To get list of statement from 17 Aug 2018 - 20 Aug 2018
+```ruby
+bca_statement = BcaStatement::Client.new
+bca_statement.get_statement('2018-08-17', '2018-08-20')
+```
 
 ## Development
 
@@ -32,7 +51,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/bca_statement. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/andymarthin/bca_statement. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
@@ -40,4 +59,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the BcaStatement project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/bca_statement/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the BcaStatement project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/andymarthin/bca_statement/blob/master/CODE_OF_CONDUCT.md).
